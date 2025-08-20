@@ -1,0 +1,6 @@
+{
+  "projectType": "visualstudio",
+  "primarySolution": "Agentie_de_Voiaj.sln",
+  "buildSystem": "msbuild",
+  "startupProjects": ["Agentie_de_Voiaj_Server", "Agentie_de_Voiaj_Client"]
+}
