@@ -10,7 +10,7 @@ namespace Config
 		constexpr int MAX_CONNECTIONS = 100;
 		constexpr int BACKLOG_SIZE = 10;
 		constexpr int BUFFER_SIZE = 4096;
-		constexpr int SOCKET_TIMEOUT_MS = 30000; // 30 seconds
+		constexpr int SOCKET_TIMEOUT_MS = 300000; // 5 minutes
 		constexpr bool ENABLE_KEEP_ALIVE = true; // Enable TCP keep-alive
 	}
 

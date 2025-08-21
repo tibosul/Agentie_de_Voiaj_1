@@ -35,10 +35,10 @@
     <ResourceCompile Include="Agentie_de_Voiaj_Client.rc" />
   </ItemGroup>
   <ItemGroup>
-    <QtRcc Include="Main_Window.qrc" />
+    <QtRcc Include="resources\ui\Main_Window.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="Main_Window.ui" />
+    <QtUic Include="resources\ui\Main_Window.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtMoc Include="include\controllers\Reservation_Controller.h" />

@@ -87,6 +87,9 @@ Main_Window::Main_Window(QWidget* parent)
     setup_status_bar();
     setup_connections();
     
+    // Initialize theme
+    m_style_manager->load_theme(m_current_theme);
+    
     // Initialize connection status display
     if (m_connection_status_label) {
         m_connection_status_label->setText("🔄 Se conectează...");
@@ -1002,12 +1005,12 @@ void Main_Window::on_settings_action()
 
 void Main_Window::on_toggle_theme_action()
 {
-    // Toggle between light and dark theme
-    m_current_theme = (m_current_theme == "light") ? "dark" : "light";
-    m_theme_toggle_button->setText((m_current_theme == "light") ? "🌙" : "☀️");
-    
     // Apply theme using Style_Manager
     m_style_manager->toggle_theme();
+    
+    // Sync local theme with Style_Manager
+    m_current_theme = m_style_manager->get_current_theme();
+    m_theme_toggle_button->setText((m_current_theme == "light") ? "🌙" : "☀️");
     
     qDebug() << "Theme switched to:" << m_current_theme;
 }
@@ -1321,6 +1324,17 @@ void Main_Window::refresh_reservations_display()
 
 QWidget* Main_Window::create_offer_card(const Offer_Model::Offer& offer)
 {
+    // Debug offer data
+    qDebug() << "Creating offer card for:";
+    qDebug() << "  ID:" << offer.id;
+    qDebug() << "  Name:" << offer.name;
+    qDebug() << "  Destination:" << offer.destination;
+    qDebug() << "  Description:" << offer.description;
+    qDebug() << "  Price:" << offer.price_per_person;
+    qDebug() << "  Duration:" << offer.duration_days;
+    qDebug() << "  Available seats:" << offer.available_seats;
+    qDebug() << "  Status:" << offer.status;
+    
     QWidget* offerCard = new QWidget();
     offerCard->setFixedHeight(150);
     offerCard->setStyleSheet(
@@ -1332,7 +1346,6 @@ QWidget* Main_Window::create_offer_card(const Offer_Model::Offer& offer)
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.1); "
         "}"
     );
     
@@ -1348,15 +1361,28 @@ QWidget* Main_Window::create_offer_card(const Offer_Model::Offer& offer)
     // Offer details
     QVBoxLayout* detailsLayout = new QVBoxLayout();
     
-    QLabel* titleLabel = new QLabel(offer.name);
-    titleLabel->setStyleSheet("font-weight: bold; font-size: 18px;");
+    // Use safe text with fallbacks
+    QString name = offer.name.isEmpty() ? "Ofertă fără nume" : offer.name;
+    QString description = offer.description.isEmpty() ? "Fără descriere disponibilă" : offer.description;
+    QString destination = offer.destination.isEmpty() ? "Destinație necunoscută" : offer.destination;
+    
+    QLabel* titleLabel = new QLabel(QString("%1 - %2").arg(name, destination));
+    titleLabel->setStyleSheet("font-weight: bold; font-size: 18px; color: #333;");
     detailsLayout->addWidget(titleLabel);
     
-    QLabel* descLabel = new QLabel(offer.description);
+    QLabel* descLabel = new QLabel(description);
     descLabel->setWordWrap(true);
+    descLabel->setStyleSheet("color: #666; margin: 5px 0px;");
     detailsLayout->addWidget(descLabel);
     
-    QLabel* priceLabel = new QLabel(QString("€%1/persoană").arg(offer.price_per_person));
+    // Add duration and availability info
+    QString durationText = QString("%1 zile").arg(offer.duration_days > 0 ? offer.duration_days : 1);
+    QString availabilityText = QString("%1 locuri disponibile").arg(offer.available_seats);
+    QLabel* infoLabel = new QLabel(QString("%1 • %2").arg(durationText, availabilityText));
+    infoLabel->setStyleSheet("color: #888; font-size: 12px;");
+    detailsLayout->addWidget(infoLabel);
+    
+    QLabel* priceLabel = new QLabel(QString("€%1/persoană").arg(offer.price_per_person, 0, 'f', 2));
     priceLabel->setStyleSheet("font-weight: bold; font-size: 16px; color: #e74c3c;");
     detailsLayout->addWidget(priceLabel);
     
@@ -1397,7 +1423,6 @@ QWidget* Main_Window::create_reservation_card(const Reservation_Model::Reservati
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.1); "
         "}"
     );
     
@@ -1470,7 +1495,6 @@ QWidget* Main_Window::create_destination_card(const Destination_Model::Destinati
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0px 4px 8px rgba(74, 144, 226, 0.3); "
         "}"
     );
     

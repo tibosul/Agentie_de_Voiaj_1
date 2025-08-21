@@ -12,6 +12,7 @@ QPushButton {
     border-radius: 4px;
     font-weight: bold;
     min-width: 80px;
+    min-height: 32px;
 }
 
 QPushButton:hover {
@@ -22,13 +23,38 @@ QPushButton:pressed {
     background-color: #2968a3;
 }
 
+/* Password visibility toggle buttons */
+QPushButton#passwordVisibilityButton {
+    background-color: #e8e8e8;
+    border: 1px solid #cccccc;
+    color: #333333;
+    font-size: 16px;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    border-radius: 6px;
+    padding: 0px;
+}
+
+QPushButton#passwordVisibilityButton:hover {
+    background-color: #d0d0d0;
+    border-color: #999999;
+}
+
+QPushButton#passwordVisibilityButton:pressed {
+    background-color: #c0c0c0;
+}
+
 QLineEdit {
     border: 2px solid #ddd;
     border-radius: 4px;
-    padding: 8px;
+    padding: 10px;
     background-color: white;
     color: #333333;
     selection-background-color: #4a90e2;
+    min-height: 25px;
+    font-size: 14px;
 }
 
 QLineEdit:focus {
@@ -43,16 +69,17 @@ QGroupBox {
     font-weight: bold;
     border: 2px solid #cccccc;
     border-radius: 8px;
-    margin-top: 1ex;
-    padding-top: 16px;
+    margin-top: 1.5ex;
+    padding: 20px 15px 15px 15px;
     color: #333333;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
-    left: 10px;
-    padding: 0 10px 0 10px;
+    left: 15px;
+    padding: 0 15px 0 15px;
     color: #333333;
+    font-size: 14px;
 }
 
 QFrame.card {
@@ -61,6 +88,8 @@ QFrame.card {
     border-radius: 8px;
     padding: 16px;
     color: #333333;
+    min-width: 280px;
+    min-height: 180px;
 }
 
 QFrame.card:hover {

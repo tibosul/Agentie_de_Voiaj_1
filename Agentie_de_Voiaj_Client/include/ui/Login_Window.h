@@ -28,6 +28,9 @@ private slots:
     void on_register_clicked();
     void on_forgot_password_clicked();
     void on_remember_me_toggled(bool checked);
+    void on_toggle_login_password_visibility();
+    void on_toggle_register_password_visibility();
+    void on_toggle_register_confirm_password_visibility();
 
     void on_login_success();
     void on_login_failed(const QString& error_message);
@@ -56,6 +59,7 @@ private:
     QWidget* m_login_tab;
     QLineEdit* m_username_input;
     QLineEdit* m_password_input;
+    QPushButton* m_password_visibility_button;
     QPushButton* m_login_button;
     QCheckBox* m_remember_me_checkbox;
     QPushButton* m_forgot_password_button;
@@ -63,7 +67,9 @@ private:
     QWidget* m_register_tab;
     QLineEdit* m_register_username;
     QLineEdit* m_register_password;
+    QPushButton* m_register_password_visibility_button;
     QLineEdit* m_register_confirm_password;
+    QPushButton* m_register_confirm_password_visibility_button;
     QLineEdit* m_register_email;
     QLineEdit* m_register_first_name;
     QLineEdit* m_register_last_name;

@@ -42,7 +42,7 @@ Login_Window::Login_Window(QWidget* parent)
     
     setModal(true);
     setWindowTitle("Agentie de Voiaj - Autentificare");
-    setFixedSize(400, 500);
+    setFixedSize(520, 680);
 }
 
 Login_Window::~Login_Window() = default;
@@ -72,25 +72,51 @@ void Login_Window::setup_ui()
     // === LOGIN TAB ===
     m_login_tab = new QWidget();
     QVBoxLayout* loginLayout = new QVBoxLayout(m_login_tab);
-    loginLayout->setSpacing(15);
+    loginLayout->setSpacing(20);
+    loginLayout->setContentsMargins(20, 20, 20, 20);
     
     // Login form
     QGroupBox* loginGroup = new QGroupBox("Conectare");
     QGridLayout* loginGridLayout = new QGridLayout(loginGroup);
-    loginGridLayout->setSpacing(10);
+    loginGridLayout->setSpacing(15);
+    loginGridLayout->setContentsMargins(25, 30, 25, 25);
+    loginGridLayout->setRowMinimumHeight(0, 50);
+    loginGridLayout->setRowMinimumHeight(1, 50);
     
     // Username
-    loginGridLayout->addWidget(new QLabel("Utilizator:"), 0, 0);
+    QLabel* usernameLabel = new QLabel("Utilizator:");
+    usernameLabel->setAlignment(Qt::AlignVCenter);
+    loginGridLayout->addWidget(usernameLabel, 0, 0);
     m_username_input = new QLineEdit();
     m_username_input->setPlaceholderText("Introduceți numele de utilizator");
+    m_username_input->setMinimumHeight(40);
     loginGridLayout->addWidget(m_username_input, 0, 1);
     
     // Password
-    loginGridLayout->addWidget(new QLabel("Parolă:"), 1, 0);
+    QLabel* passwordLabel = new QLabel("Parolă:");
+    passwordLabel->setAlignment(Qt::AlignVCenter);
+    loginGridLayout->addWidget(passwordLabel, 1, 0);
+    
+    // Password input with visibility toggle
+    QHBoxLayout* passwordLayout = new QHBoxLayout();
     m_password_input = new QLineEdit();
     m_password_input->setPlaceholderText("Introduceți parola");
     m_password_input->setEchoMode(QLineEdit::Password);
-    loginGridLayout->addWidget(m_password_input, 1, 1);
+    m_password_input->setMinimumHeight(40);
+    
+    m_password_visibility_button = new QPushButton("👁");
+    m_password_visibility_button->setObjectName("passwordVisibilityButton");
+    m_password_visibility_button->setFixedSize(40, 40);
+    m_password_visibility_button->setToolTip("Arată/ascunde parola");
+    m_password_visibility_button->setCheckable(true);
+    
+    passwordLayout->addWidget(m_password_input);
+    passwordLayout->addWidget(m_password_visibility_button);
+    passwordLayout->setContentsMargins(0, 0, 0, 0);
+    
+    QWidget* passwordWidget = new QWidget();
+    passwordWidget->setLayout(passwordLayout);
+    loginGridLayout->addWidget(passwordWidget, 1, 1);
     
     loginLayout->addWidget(loginGroup);
     
@@ -115,56 +141,118 @@ void Login_Window::setup_ui()
     // === REGISTER TAB ===
     m_register_tab = new QWidget();
     QVBoxLayout* registerLayout = new QVBoxLayout(m_register_tab);
-    registerLayout->setSpacing(15);
+    registerLayout->setSpacing(20);
+    registerLayout->setContentsMargins(20, 20, 20, 20);
     
     // Register form
     QGroupBox* registerGroup = new QGroupBox("Înregistrare Cont Nou");
     QGridLayout* registerGridLayout = new QGridLayout(registerGroup);
-    registerGridLayout->setSpacing(10);
+    registerGridLayout->setSpacing(15);
+    registerGridLayout->setContentsMargins(25, 35, 25, 30);
+    registerGridLayout->setRowMinimumHeight(0, 50);
+    registerGridLayout->setRowMinimumHeight(1, 50);
+    registerGridLayout->setRowMinimumHeight(2, 50);
+    registerGridLayout->setRowMinimumHeight(3, 50);
+    registerGridLayout->setRowMinimumHeight(4, 50);
+    registerGridLayout->setRowMinimumHeight(5, 50);
+    registerGridLayout->setRowMinimumHeight(6, 50);
     
     // Username
-    registerGridLayout->addWidget(new QLabel("Utilizator:*"), 0, 0);
+    QLabel* regUsernameLabel = new QLabel("Utilizator:*");
+    regUsernameLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regUsernameLabel, 0, 0);
     m_register_username = new QLineEdit();
     m_register_username->setPlaceholderText("Nume utilizator (minim 3 caractere)");
+    m_register_username->setMinimumHeight(40);
     registerGridLayout->addWidget(m_register_username, 0, 1);
     
     // Email
-    registerGridLayout->addWidget(new QLabel("Email:*"), 1, 0);
+    QLabel* regEmailLabel = new QLabel("Email:*");
+    regEmailLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regEmailLabel, 1, 0);
     m_register_email = new QLineEdit();
     m_register_email->setPlaceholderText("adresa@email.com");
+    m_register_email->setMinimumHeight(40);
     registerGridLayout->addWidget(m_register_email, 1, 1);
     
     // First Name
-    registerGridLayout->addWidget(new QLabel("Prenume:*"), 2, 0);
+    QLabel* regFirstNameLabel = new QLabel("Prenume:*");
+    regFirstNameLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regFirstNameLabel, 2, 0);
     m_register_first_name = new QLineEdit();
     m_register_first_name->setPlaceholderText("Prenumele dvs.");
+    m_register_first_name->setMinimumHeight(40);
     registerGridLayout->addWidget(m_register_first_name, 2, 1);
     
     // Last Name
-    registerGridLayout->addWidget(new QLabel("Nume:*"), 3, 0);
+    QLabel* regLastNameLabel = new QLabel("Nume:*");
+    regLastNameLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regLastNameLabel, 3, 0);
     m_register_last_name = new QLineEdit();
     m_register_last_name->setPlaceholderText("Numele de familie");
+    m_register_last_name->setMinimumHeight(40);
     registerGridLayout->addWidget(m_register_last_name, 3, 1);
     
     // Phone (optional)
-    registerGridLayout->addWidget(new QLabel("Telefon:"), 4, 0);
+    QLabel* regPhoneLabel = new QLabel("Telefon:");
+    regPhoneLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regPhoneLabel, 4, 0);
     m_register_phone = new QLineEdit();
     m_register_phone->setPlaceholderText("0700123456 (opțional)");
+    m_register_phone->setMinimumHeight(40);
     registerGridLayout->addWidget(m_register_phone, 4, 1);
     
     // Password
-    registerGridLayout->addWidget(new QLabel("Parolă:*"), 5, 0);
+    QLabel* regPasswordLabel = new QLabel("Parolă:*");
+    regPasswordLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regPasswordLabel, 5, 0);
+    
+    // Password input with visibility toggle
+    QHBoxLayout* regPasswordLayout = new QHBoxLayout();
     m_register_password = new QLineEdit();
     m_register_password->setPlaceholderText("Minim 6 caractere");
     m_register_password->setEchoMode(QLineEdit::Password);
-    registerGridLayout->addWidget(m_register_password, 5, 1);
+    m_register_password->setMinimumHeight(40);
+    
+    m_register_password_visibility_button = new QPushButton("👁");
+    m_register_password_visibility_button->setObjectName("passwordVisibilityButton");
+    m_register_password_visibility_button->setFixedSize(40, 40);
+    m_register_password_visibility_button->setToolTip("Arată/ascunde parola");
+    m_register_password_visibility_button->setCheckable(true);
+    
+    regPasswordLayout->addWidget(m_register_password);
+    regPasswordLayout->addWidget(m_register_password_visibility_button);
+    regPasswordLayout->setContentsMargins(0, 0, 0, 0);
+    
+    QWidget* regPasswordWidget = new QWidget();
+    regPasswordWidget->setLayout(regPasswordLayout);
+    registerGridLayout->addWidget(regPasswordWidget, 5, 1);
     
     // Confirm Password
-    registerGridLayout->addWidget(new QLabel("Confirmă:*"), 6, 0);
+    QLabel* regConfirmLabel = new QLabel("Confirmă:*");
+    regConfirmLabel->setAlignment(Qt::AlignVCenter);
+    registerGridLayout->addWidget(regConfirmLabel, 6, 0);
+    
+    // Confirm password input with visibility toggle
+    QHBoxLayout* regConfirmLayout = new QHBoxLayout();
     m_register_confirm_password = new QLineEdit();
     m_register_confirm_password->setPlaceholderText("Repetați parola");
     m_register_confirm_password->setEchoMode(QLineEdit::Password);
-    registerGridLayout->addWidget(m_register_confirm_password, 6, 1);
+    m_register_confirm_password->setMinimumHeight(40);
+    
+    m_register_confirm_password_visibility_button = new QPushButton("👁");
+    m_register_confirm_password_visibility_button->setObjectName("passwordVisibilityButton");
+    m_register_confirm_password_visibility_button->setFixedSize(40, 40);
+    m_register_confirm_password_visibility_button->setToolTip("Arată/ascunde parola");
+    m_register_confirm_password_visibility_button->setCheckable(true);
+    
+    regConfirmLayout->addWidget(m_register_confirm_password);
+    regConfirmLayout->addWidget(m_register_confirm_password_visibility_button);
+    regConfirmLayout->setContentsMargins(0, 0, 0, 0);
+    
+    QWidget* regConfirmWidget = new QWidget();
+    regConfirmWidget->setLayout(regConfirmLayout);
+    registerGridLayout->addWidget(regConfirmWidget, 6, 1);
     
     registerLayout->addWidget(registerGroup);
     
@@ -212,9 +300,12 @@ void Login_Window::setup_connections()
     connect(m_login_button, &QPushButton::clicked, this, &Login_Window::on_login_clicked);
     connect(m_forgot_password_button, &QPushButton::clicked, this, &Login_Window::on_forgot_password_clicked);
     connect(m_remember_me_checkbox, &QCheckBox::toggled, this, &Login_Window::on_remember_me_toggled);
+    connect(m_password_visibility_button, &QPushButton::clicked, this, &Login_Window::on_toggle_login_password_visibility);
     
     // Register tab connections
     connect(m_register_button, &QPushButton::clicked, this, &Login_Window::on_register_clicked);
+    connect(m_register_password_visibility_button, &QPushButton::clicked, this, &Login_Window::on_toggle_register_password_visibility);
+    connect(m_register_confirm_password_visibility_button, &QPushButton::clicked, this, &Login_Window::on_toggle_register_confirm_password_visibility);
     
     // Enter key handling
     connect(m_password_input, &QLineEdit::returnPressed, this, &Login_Window::on_login_clicked);
@@ -261,7 +352,8 @@ void Login_Window::on_login_clicked()
 
 void Login_Window::on_register_clicked()
 {
-    if (!validate_register_form()) {
+    if (!validate_register_form())
+    {
         return;
     }
     
@@ -304,14 +396,21 @@ void Login_Window::on_login_success()
 
 void Login_Window::on_login_failed(const QString& error_message)
 {
+    qDebug() << "Login_Window: === ENTERING on_login_failed ===";
     qDebug() << "Login_Window: Received login_failed signal with message:" << error_message;
     qDebug() << "Login_Window: Current loading state:" << m_is_loading;
     
+    // Since we're using Qt::QueuedConnection, we're already on the main thread
+    qDebug() << "Login_Window: Setting loading state to false...";
     set_loading_state(false);
+    qDebug() << "Login_Window: Loading state set, now showing error...";
+    
     show_error("Autentificare eșuată: " + error_message);
+    qDebug() << "Login_Window: Error shown successfully";
     
     qDebug() << "Login_Window: After processing login_failed, loading state:" << m_is_loading;
     qDebug() << "Login_Window: Login button enabled:" << m_login_button->isEnabled();
+    qDebug() << "Login_Window: === EXITING on_login_failed ===";
 }
 
 void Login_Window::on_register_success()
@@ -387,36 +486,46 @@ void Login_Window::set_register_mode()
 
 void Login_Window::set_loading_state(bool loading)
 {
-    qDebug() << "Login_Window: Setting loading state to:" << loading;
+    qDebug() << "Login_Window: === ENTERING set_loading_state ===" << loading;
+    qDebug() << "Login_Window: Previous loading state:" << m_is_loading;
     
     m_is_loading = loading;
     
-    // Disable/enable inputs
-    m_login_button->setEnabled(!loading);
-    m_register_button->setEnabled(!loading);
-    m_username_input->setEnabled(!loading);
-    m_password_input->setEnabled(!loading);
-    m_register_username->setEnabled(!loading);
-    m_register_password->setEnabled(!loading);
-    m_register_confirm_password->setEnabled(!loading);
-    m_register_email->setEnabled(!loading);
-    m_register_first_name->setEnabled(!loading);
-    m_register_last_name->setEnabled(!loading);
-    m_register_phone->setEnabled(!loading);
+    qDebug() << "Login_Window: Enabling/disabling UI elements...";
+    
+    // Disable/enable inputs - check for null pointers
+    if (m_login_button) {
+        m_login_button->setEnabled(!loading);
+        qDebug() << "Login_Window: Login button enabled:" << m_login_button->isEnabled();
+    }
+    if (m_register_button) m_register_button->setEnabled(!loading);
+    if (m_username_input) m_username_input->setEnabled(!loading);
+    if (m_password_input) m_password_input->setEnabled(!loading);
+    if (m_password_visibility_button) m_password_visibility_button->setEnabled(!loading);
+    if (m_register_username) m_register_username->setEnabled(!loading);
+    if (m_register_password) m_register_password->setEnabled(!loading);
+    if (m_register_password_visibility_button) m_register_password_visibility_button->setEnabled(!loading);
+    if (m_register_confirm_password) m_register_confirm_password->setEnabled(!loading);
+    if (m_register_confirm_password_visibility_button) m_register_confirm_password_visibility_button->setEnabled(!loading);
+    if (m_register_email) m_register_email->setEnabled(!loading);
+    if (m_register_first_name) m_register_first_name->setEnabled(!loading);
+    if (m_register_last_name) m_register_last_name->setEnabled(!loading);
+    if (m_register_phone) m_register_phone->setEnabled(!loading);
+    
+    qDebug() << "Login_Window: UI elements updated, handling progress bar...";
     
     // Show/hide progress
     if (loading) {
-        m_progress_bar->show();
-        m_status_label->setText("Se procesează...");
-        m_status_label->show();
+        if (m_progress_bar) m_progress_bar->show();
+        if (m_status_label) {
+            m_status_label->setText("Se procesează...");
+            m_status_label->show();
+        }
     } else {
-        m_progress_bar->hide();
+        if (m_progress_bar) m_progress_bar->hide();
     }
     
-    // Force UI update to prevent freezing
-    QApplication::processEvents();
-    
-    qDebug() << "Login_Window: Loading state set, UI updated";
+    qDebug() << "Login_Window: === EXITING set_loading_state ===" << loading;
 }
 
 bool Login_Window::validate_login_form()
@@ -498,4 +607,43 @@ void Login_Window::show_success(const QString& message)
     m_status_label->setText(message);
     m_status_label->setStyleSheet("color: #27ae60; font-weight: bold;");
     m_status_label->show();
+}
+
+void Login_Window::on_toggle_login_password_visibility()
+{
+    if (m_password_input->echoMode() == QLineEdit::Password) {
+        m_password_input->setEchoMode(QLineEdit::Normal);
+        m_password_visibility_button->setText("🙈");
+        m_password_visibility_button->setToolTip("Ascunde parola");
+    } else {
+        m_password_input->setEchoMode(QLineEdit::Password);
+        m_password_visibility_button->setText("👁");
+        m_password_visibility_button->setToolTip("Arată parola");
+    }
+}
+
+void Login_Window::on_toggle_register_password_visibility()
+{
+    if (m_register_password->echoMode() == QLineEdit::Password) {
+        m_register_password->setEchoMode(QLineEdit::Normal);
+        m_register_password_visibility_button->setText("🙈");
+        m_register_password_visibility_button->setToolTip("Ascunde parola");
+    } else {
+        m_register_password->setEchoMode(QLineEdit::Password);
+        m_register_password_visibility_button->setText("👁");
+        m_register_password_visibility_button->setToolTip("Arată parola");
+    }
+}
+
+void Login_Window::on_toggle_register_confirm_password_visibility()
+{
+    if (m_register_confirm_password->echoMode() == QLineEdit::Password) {
+        m_register_confirm_password->setEchoMode(QLineEdit::Normal);
+        m_register_confirm_password_visibility_button->setText("🙈");
+        m_register_confirm_password_visibility_button->setToolTip("Ascunde parola");
+    } else {
+        m_register_confirm_password->setEchoMode(QLineEdit::Password);
+        m_register_confirm_password_visibility_button->setText("👁");
+        m_register_confirm_password_visibility_button->setToolTip("Arată parola");
+    }
 }

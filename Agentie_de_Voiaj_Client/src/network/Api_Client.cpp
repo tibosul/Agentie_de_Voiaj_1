@@ -15,6 +15,7 @@ Api_Client::Api_Client(QObject* parent)
     , m_socket(std::make_unique<QTcpSocket>(this))
     , m_timeout_timer(std::make_unique<QTimer>(this))
     , m_reconnect_timer(std::make_unique<QTimer>(this))
+    , m_keepalive_timer(std::make_unique<QTimer>(this))
     , m_server_host(Config::Server::DEFAULT_HOST)
     , m_server_port(Config::Server::DEFAULT_PORT)
     , m_timeout_ms(DEFAULT_TIMEOUT_MS)
@@ -31,6 +32,11 @@ Api_Client::Api_Client(QObject* parent)
 	m_reconnect_timer->setInterval(Config::Server::CONNECTION_TIMEOUT_MS / 6); // Retry every 5 seconds
     connect(m_reconnect_timer.get(), &QTimer::timeout, 
             this, &Api_Client::attempt_reconnection);
+    
+    // Setup keepalive timer
+    m_keepalive_timer->setInterval(60000); // Send keepalive every 60 seconds
+    connect(m_keepalive_timer.get(), &QTimer::timeout,
+            this, &Api_Client::send_keepalive);
     
     // Setup socket signals
     connect(m_socket.get(), &QTcpSocket::connected,
@@ -128,6 +134,9 @@ void Api_Client::disconnect_from_server()
 {
     // Stop reconnection attempts since this is intentional
     stop_reconnection();
+    
+    // Stop keepalive timer
+    m_keepalive_timer->stop();
     
     if (m_socket->state() == QAbstractSocket::ConnectedState)
     {
@@ -518,6 +527,9 @@ void Api_Client::on_socket_connected()
     // Stop reconnection attempts
     m_reconnect_timer->stop();
     
+    // Start keepalive timer
+    m_keepalive_timer->start();
+    
     std::optional<Pending_Request> pending;
     {
         QMutexLocker locker(&m_mutex);
@@ -548,6 +560,7 @@ void Api_Client::on_socket_disconnected()
     }
     
     m_timeout_timer->stop();
+    m_keepalive_timer->stop();
     emit connection_status_changed(false);
     
     // Start reconnection attempts only if this wasn't an intentional disconnect
@@ -592,6 +605,17 @@ void Api_Client::attempt_reconnection()
 	
 	qDebug() << "Reconnection attempt" << reconnection_attempts << "of" << Config::Server::MAX_RETRIES;
 	connect_to_server();
+}
+
+void Api_Client::send_keepalive()
+{
+    if (is_connected()) {
+        qDebug() << "Api_Client: Sending keepalive";
+        test_connection();
+    } else {
+        qDebug() << "Api_Client: Not connected, stopping keepalive timer";
+        m_keepalive_timer->stop();
+    }
 }
 
 void Api_Client::on_socket_ready_read()
@@ -697,16 +721,14 @@ void Api_Client::handle_response(const QJsonObject& response)
     qDebug() << "Success:" << api_response.success;
     qDebug() << "Message:" << api_response.message;
     
-    if (api_response.success)
+    // Handle authentication responses regardless of success/failure
+    if (m_current_request_type == Request_Type::Login || m_current_request_type == Request_Type::Register)
     {
-        if (m_current_request_type == Request_Type::Login || m_current_request_type == Request_Type::Register)
-        {
-            process_authentication_response(api_response);
-        }
-        else
-        {
-            process_data_response(m_current_request_type, api_response);
-        }
+        process_authentication_response(api_response);
+    }
+    else if (api_response.success)
+    {
+        process_data_response(m_current_request_type, api_response);
     }
     else
     {
@@ -743,16 +765,23 @@ Api_Client::Api_Response Api_Client::parse_json_response(const QJsonObject& json
 
 void Api_Client::process_authentication_response(const Api_Response& response)
 {
+    qDebug() << "Api_Client: === ENTERING process_authentication_response ===";
+    qDebug() << "Api_Client: Response success:" << response.success;
+    qDebug() << "Api_Client: Response message:" << response.message;
+    qDebug() << "Api_Client: Current request type:" << request_type_to_string(m_current_request_type);
+    
     if (response.success)
     {
         QJsonObject userData = response.data;
         
         if (m_current_request_type == Request_Type::Login)
         {
+            qDebug() << "Api_Client: Emitting login_success signal";
             emit login_success(userData);
         }
         else if (m_current_request_type == Request_Type::Register)
         {
+            qDebug() << "Api_Client: Emitting register_success signal";
             emit register_success();
         }
     }
@@ -760,13 +789,17 @@ void Api_Client::process_authentication_response(const Api_Response& response)
     {
         if (m_current_request_type == Request_Type::Login)
         {
+            qDebug() << "Api_Client: Emitting login_failed signal with message:" << response.message;
             emit login_failed(response.message);
         }
         else if (m_current_request_type == Request_Type::Register)
         {
+            qDebug() << "Api_Client: Emitting register_failed signal";
             emit register_failed(response.message);
         }
     }
+    
+    qDebug() << "Api_Client: === EXITING process_authentication_response ===";
 }
 
 void Api_Client::process_data_response(Request_Type type, const Api_Response& response)

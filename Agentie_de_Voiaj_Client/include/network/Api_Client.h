@@ -95,6 +95,7 @@ private slots:
     void on_socket_ready_read();
     void on_socket_error(QAbstractSocket::SocketError error);
     void on_request_timeout();
+    void send_keepalive();
     void attempt_reconnection();
 
 private:
@@ -126,6 +127,7 @@ private:
     std::unique_ptr<QTcpSocket> m_socket;
     std::unique_ptr<QTimer> m_timeout_timer;
     std::unique_ptr<QTimer> m_reconnect_timer;
+    std::unique_ptr<QTimer> m_keepalive_timer;
     mutable QMutex m_mutex;
 
     QString m_server_host;

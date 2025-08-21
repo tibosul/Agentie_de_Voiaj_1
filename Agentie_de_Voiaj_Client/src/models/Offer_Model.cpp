@@ -302,6 +302,8 @@ Offer_Model::Offer Offer_Model::offer_from_json(const QJsonObject& jsonObj) cons
 {
     Offer offer;
     
+    qDebug() << "Parsing JSON object keys:" << jsonObj.keys();
+    
     // Map JSON fields from server response to offer structure
     offer.id = jsonObj["Offer_ID"].toInt();
     offer.name = jsonObj["Name"].toString();
@@ -317,6 +319,17 @@ Offer_Model::Offer Offer_Model::offer_from_json(const QJsonObject& jsonObj) cons
     offer.description = jsonObj["Description"].toString();
     offer.image_path = jsonObj["Image_Path"].toString(); // May be empty from server
     offer.status = jsonObj["Status"].toString();
+    
+    // Debug parsed values
+    qDebug() << "Parsed offer:";
+    qDebug() << "  ID:" << offer.id;
+    qDebug() << "  Name:" << offer.name;
+    qDebug() << "  Destination:" << offer.destination;
+    qDebug() << "  Description:" << offer.description;
+    qDebug() << "  Price:" << offer.price_per_person;
+    qDebug() << "  Duration:" << offer.duration_days;
+    qDebug() << "  Available seats:" << offer.available_seats;
+    qDebug() << "  Status:" << offer.status;
     
     // Parse dates - server sends Departure_Date and Return_Date
     if (jsonObj.contains("Departure_Date"))

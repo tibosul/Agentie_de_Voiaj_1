@@ -21,8 +21,8 @@ namespace Config
     {
         const QString DEFAULT_HOST = "127.0.0.1";
         constexpr int DEFAULT_PORT = 8080;
-        constexpr int CONNECTION_TIMEOUT_MS = 30000;  // 30 seconds
-        constexpr int REQUEST_TIMEOUT_MS = 15000;     // 15 seconds
+        constexpr int CONNECTION_TIMEOUT_MS = 300000;  // 5 minutes
+        constexpr int REQUEST_TIMEOUT_MS = 60000;     // 60 seconds
         constexpr int MAX_RETRIES = 3;
     }
 
