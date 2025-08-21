@@ -723,7 +723,23 @@ Api_Client::Api_Response Api_Client::parse_json_response(const QJsonObject& json
     Api_Response response;
     response.success = json_response["success"].toBool();
     response.message = json_response["message"].toString();
-    response.data = json_response["data"].toObject();
+    
+    // Handle both object and array data from server
+    const QJsonValue dataValue = json_response["data"];
+    if (dataValue.isArray())
+    {
+        // If server sends array directly, wrap it in an object under "data" key
+        // This maintains compatibility with existing process_data_response logic
+        QJsonObject dataWrapper;
+        dataWrapper["data"] = dataValue.toArray();
+        response.data = dataWrapper;
+    }
+    else
+    {
+        // If server sends object, use it directly
+        response.data = dataValue.toObject();
+    }
+    
     response.status_code = 200; // TCP doesn't have HTTP status codes
     
     return response;
