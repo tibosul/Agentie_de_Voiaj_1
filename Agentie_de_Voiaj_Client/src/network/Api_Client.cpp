@@ -723,7 +723,19 @@ Api_Client::Api_Response Api_Client::parse_json_response(const QJsonObject& json
     Api_Response response;
     response.success = json_response["success"].toBool();
     response.message = json_response["message"].toString();
-    response.data = json_response["data"].toObject();
+    
+    const QJsonValue data_value = json_response["data"];
+    if(data_value.isArray())
+    {
+        QJsonObject data_wrapper;
+        data_wrapper["data"] = data_value.toArray();
+        response.data = data_wrapper;
+    }
+    else
+    {
+        response.data = data_value.toObject();
+    }
+
     response.status_code = 200; // TCP doesn't have HTTP status codes
     
     return response;
