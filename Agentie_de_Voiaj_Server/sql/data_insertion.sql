@@ -120,43 +120,43 @@ INSERT INTO Accommodations (Name, Destination_ID, Type_of_Accommodation, Categor
 
 -- PARIS OFFERS
 INSERT INTO Offers (Name, Destination_ID, Accommodation_ID, Types_of_Transport_ID, Price_per_Person, Duration_Days, Departure_Date, Return_Date, Total_Seats, Reserved_Seats, Included_Services, Description, Status) VALUES
-('Paris Luxury Experience', 1, 1, 1, 1850.00, 5, '2025-09-15', '2025-09-20', 20, 0, 'Breakfast, Airport transfer, City tour, Louvre tickets', 'Exclusive 5-day luxury Paris experience with premium accommodation', 'active'),
-('Paris City Break', 1, 2, 1, 720.00, 3, '2025-10-01', '2025-10-04', 40, 5, 'Breakfast, Airport transfer', 'Perfect weekend getaway to the City of Lights', 'active'),
-('Paris Budget Adventure', 1, 3, 3, 350.00, 4, '2025-09-20', '2025-09-24', 35, 8, 'Bus transfer, Walking tour', 'Affordable Paris discovery for young travelers', 'active'),
-('Paris Apartment Stay', 1, 4, 2, 980.00, 6, '2025-11-10', '2025-11-16', 8, 2, 'Train tickets, Metro pass, Local guide', 'Independent stay in elegant Champs Elysees apartment', 'active'),
-('Paris Palace Week', 1, 5, 1, 2400.00, 7, '2025-12-01', '2025-12-08', 15, 0, 'All meals, Spa access, Private tours, Transfers', 'Ultimate luxury week at Le Bristol Palace', 'active');
+('Paris Luxury Experience', 1, 1, 1, 1850.00, 5, '2026-09-15', '2026-09-20', 20, 0, 'Breakfast, Airport transfer, City tour, Louvre tickets', 'Exclusive 5-day luxury Paris experience with premium accommodation', 'active'),
+('Paris City Break', 1, 2, 1, 720.00, 3, '2026-10-01', '2026-10-04', 40, 5, 'Breakfast, Airport transfer', 'Perfect weekend getaway to the City of Lights', 'active'),
+('Paris Budget Adventure', 1, 3, 3, 350.00, 4, '2026-09-20', '2026-09-24', 35, 8, 'Bus transfer, Walking tour', 'Affordable Paris discovery for young travelers', 'active'),
+('Paris Apartment Stay', 1, 4, 2, 980.00, 6, '2026-11-10', '2026-11-16', 8, 2, 'Train tickets, Metro pass, Local guide', 'Independent stay in elegant Champs Elysees apartment', 'active'),
+('Paris Palace Week', 1, 5, 1, 2400.00, 7, '2026-12-01', '2026-12-08', 15, 0, 'All meals, Spa access, Private tours, Transfers', 'Ultimate luxury week at Le Bristol Palace', 'active');
 
 -- ROME OFFERS
 INSERT INTO Offers (Name, Destination_ID, Accommodation_ID, Types_of_Transport_ID, Price_per_Person, Duration_Days, Departure_Date, Return_Date, Total_Seats, Reserved_Seats, Included_Services, Description, Status) VALUES
-('Rome Imperial Tour', 2, 6, 1, 1650.00, 5, '2025-09-25', '2025-09-30', 25, 3, 'Breakfast, Colosseum VIP tour, Vatican tour, Transfers', 'Discover the eternal city with exclusive access', 'active'),
-('Rome Classic', 2, 7, 1, 890.00, 4, '2025-10-15', '2025-10-19', 30, 7, 'Breakfast, City tour, Airport transfer', 'Essential Rome experience with central accommodation', 'active'),
-('Rome Backpacker Special', 2, 8, 3, 420.00, 5, '2025-09-30', '2025-10-05', 28, 12, 'Bus transfer, Walking tours, Breakfast', 'Budget-friendly Roman adventure', 'active'),
-('Rome Vatican Apartment', 2, 9, 2, 1150.00, 6, '2025-11-20', '2025-11-26', 6, 1, 'Train tickets, Vatican tour, Local guide', 'Stay near Vatican with apartment comfort', 'active'),
-('Rome Resort Luxury', 2, 10, 1, 2100.00, 7, '2025-12-15', '2025-12-22', 18, 0, 'All meals, Spa, Art tours, Private transfers', 'Luxury resort experience in Rome', 'active');
+('Rome Imperial Tour', 2, 6, 1, 1650.00, 5, '2026-09-25', '2026-09-30', 25, 3, 'Breakfast, Colosseum VIP tour, Vatican tour, Transfers', 'Discover the eternal city with exclusive access', 'active'),
+('Rome Classic', 2, 7, 1, 890.00, 4, '2026-10-15', '2026-10-19', 30, 7, 'Breakfast, City tour, Airport transfer', 'Essential Rome experience with central accommodation', 'active'),
+('Rome Backpacker Special', 2, 8, 3, 420.00, 5, '2026-09-30', '2026-10-05', 28, 12, 'Bus transfer, Walking tours, Breakfast', 'Budget-friendly Roman adventure', 'active'),
+('Rome Vatican Apartment', 2, 9, 2, 1150.00, 6, '2026-11-20', '2026-11-26', 6, 1, 'Train tickets, Vatican tour, Local guide', 'Stay near Vatican with apartment comfort', 'active'),
+('Rome Resort Luxury', 2, 10, 1, 2100.00, 7, '2026-12-15', '2026-12-22', 18, 0, 'All meals, Spa, Art tours, Private transfers', 'Luxury resort experience in Rome', 'active');
 
 -- BARCELONA OFFERS
 INSERT INTO Offers (Name, Destination_ID, Accommodation_ID, Types_of_Transport_ID, Price_per_Person, Duration_Days, Departure_Date, Return_Date, Total_Seats, Reserved_Seats, Included_Services, Description, Status) VALUES
-('Barcelona Beach & Culture', 3, 11, 1, 1420.00, 5, '2025-10-05', '2025-10-10', 22, 6, 'Breakfast, Sagrada Familia tour, Beach access, Transfers', 'Perfect mix of culture and relaxation', 'active'),
-('Barcelona City Explorer', 3, 12, 1, 950.00, 4, '2025-10-20', '2025-10-24', 35, 9, 'Breakfast, Park Guell tour, Metro pass', 'Explore Gaudi masterpieces and Catalan culture', 'active'),
-('Barcelona Youth Adventure', 3, 13, 3, 380.00, 4, '2025-10-10', '2025-10-14', 32, 15, 'Bus transfer, Walking tours, Hostel breakfast', 'Young travelers Barcelona discovery', 'active'),
-('Barcelona Gothic Experience', 3, 14, 2, 820.00, 5, '2025-11-05', '2025-11-10', 10, 3, 'Train tickets, Gothic quarter tour, Tapas tour', 'Historic Barcelona from medieval apartment', 'active'),
-('Barcelona Luxury Escape', 3, 15, 1, 1980.00, 6, '2025-12-20', '2025-12-26', 16, 0, 'All meals, Spa, Private tours, Shopping tour', 'Luxury Barcelona with premium services', 'active');
+('Barcelona Beach & Culture', 3, 11, 1, 1420.00, 5, '2026-10-05', '2026-10-10', 22, 6, 'Breakfast, Sagrada Familia tour, Beach access, Transfers', 'Perfect mix of culture and relaxation', 'active'),
+('Barcelona City Explorer', 3, 12, 1, 950.00, 4, '2026-10-20', '2026-10-24', 35, 9, 'Breakfast, Park Guell tour, Metro pass', 'Explore Gaudi masterpieces and Catalan culture', 'active'),
+('Barcelona Youth Adventure', 3, 13, 3, 380.00, 4, '2026-10-10', '2026-10-14', 32, 15, 'Bus transfer, Walking tours, Hostel breakfast', 'Young travelers Barcelona discovery', 'active'),
+('Barcelona Gothic Experience', 3, 14, 2, 820.00, 5, '2026-11-05', '2026-11-10', 10, 3, 'Train tickets, Gothic quarter tour, Tapas tour', 'Historic Barcelona from medieval apartment', 'active'),
+('Barcelona Luxury Escape', 3, 15, 1, 1980.00, 6, '2026-12-20', '2026-12-26', 16, 0, 'All meals, Spa, Private tours, Shopping tour', 'Luxury Barcelona with premium services', 'active');
 
 -- LONDON OFFERS
 INSERT INTO Offers (Name, Destination_ID, Accommodation_ID, Types_of_Transport_ID, Price_per_Person, Duration_Days, Departure_Date, Return_Date, Total_Seats, Reserved_Seats, Included_Services, Description, Status) VALUES
-('London Royal Experience', 4, 16, 1, 2200.00, 5, '2025-09-18', '2025-09-23', 18, 2, 'Afternoon tea, Tower of London VIP, Theater tickets, Transfers', 'Royal treatment in iconic London', 'active'),
-('London Business Trip', 4, 17, 1, 780.00, 3, '2025-10-25', '2025-10-28', 45, 11, 'Breakfast, Oyster card, Airport transfer', 'Efficient city break for business or leisure', 'active'),
-('London Budget Explorer', 4, 18, 3, 450.00, 4, '2025-10-15', '2025-10-19', 30, 18, 'Bus transfer, Walking tours, Hostel breakfast', 'Affordable London discovery', 'active'),
-('London Theater District', 4, 19, 6, 1100.00, 5, '2025-11-15', '2025-11-20', 12, 4, 'Ferry crossing, Theater tickets, Local guide', 'West End theater experience with scenic arrival', 'active'),
-('London Luxury Weekend', 4, 20, 1, 2850.00, 4, '2025-12-10', '2025-12-14', 12, 0, 'All meals, Spa, Private tours, Shopping assistant', 'Ultimate luxury London experience', 'active');
+('London Royal Experience', 4, 16, 1, 2200.00, 5, '2026-09-18', '2026-09-23', 18, 2, 'Afternoon tea, Tower of London VIP, Theater tickets, Transfers', 'Royal treatment in iconic London', 'active'),
+('London Business Trip', 4, 17, 1, 780.00, 3, '2026-10-25', '2026-10-28', 45, 11, 'Breakfast, Oyster card, Airport transfer', 'Efficient city break for business or leisure', 'active'),
+('London Budget Explorer', 4, 18, 3, 450.00, 4, '2026-10-15', '2026-10-19', 30, 18, 'Bus transfer, Walking tours, Hostel breakfast', 'Affordable London discovery', 'active'),
+('London Theater District', 4, 19, 6, 1100.00, 5, '2026-11-15', '2026-11-20', 12, 4, 'Ferry crossing, Theater tickets, Local guide', 'West End theater experience with scenic arrival', 'active'),
+('London Luxury Weekend', 4, 20, 1, 2850.00, 4, '2026-12-10', '2026-12-14', 12, 0, 'All meals, Spa, Private tours, Shopping assistant', 'Ultimate luxury London experience', 'active');
 
 -- AMSTERDAM OFFERS
 INSERT INTO Offers (Name, Destination_ID, Accommodation_ID, Types_of_Transport_ID, Price_per_Person, Duration_Days, Departure_Date, Return_Date, Total_Seats, Reserved_Seats, Included_Services, Description, Status) VALUES
-('Amsterdam Canal Cruise Luxury', 5, 21, 1, 1680.00, 4, '2025-09-28', '2025-10-02', 20, 4, 'Canal cruise, Van Gogh Museum, Breakfast, Transfers', 'Luxury canal-side experience', 'active'),
-('Amsterdam Art & Culture', 5, 22, 2, 850.00, 4, '2025-10-30', '2025-11-03', 28, 8, 'Museum passes, Bike rental, Breakfast', 'Cultural immersion in artistic Amsterdam', 'active'),
-('Amsterdam Backpacker Fun', 5, 23, 3, 320.00, 3, '2025-10-20', '2025-10-23', 25, 12, 'Bus transfer, Bike tour, Hostel breakfast', 'Budget Amsterdam adventure', 'active'),
-('Amsterdam Canal House', 5, 24, 2, 920.00, 5, '2025-11-25', '2025-11-30', 8, 2, 'Train tickets, Canal tour, Bike rental', 'Authentic Amsterdam in historic canal house', 'active'),
-('Amsterdam Design Weekend', 5, 25, 1, 1450.00, 3, '2025-12-05', '2025-12-08', 15, 0, 'Design tours, Museum access, Breakfast', 'Contemporary Amsterdam in design hotel', 'active');
+('Amsterdam Canal Cruise Luxury', 5, 21, 1, 1680.00, 4, '2026-09-28', '2026-10-02', 20, 4, 'Canal cruise, Van Gogh Museum, Breakfast, Transfers', 'Luxury canal-side experience', 'active'),
+('Amsterdam Art & Culture', 5, 22, 2, 850.00, 4, '2026-10-30', '2026-11-03', 28, 8, 'Museum passes, Bike rental, Breakfast', 'Cultural immersion in artistic Amsterdam', 'active'),
+('Amsterdam Backpacker Fun', 5, 23, 3, 320.00, 3, '2026-10-20', '2026-10-23', 25, 12, 'Bus transfer, Bike tour, Hostel breakfast', 'Budget Amsterdam adventure', 'active'),
+('Amsterdam Canal House', 5, 24, 2, 920.00, 5, '2026-11-25', '2026-11-30', 8, 2, 'Train tickets, Canal tour, Bike rental', 'Authentic Amsterdam in historic canal house', 'active'),
+('Amsterdam Design Weekend', 5, 25, 1, 1450.00, 3, '2026-12-05', '2026-12-08', 15, 0, 'Design tours, Museum access, Breakfast', 'Contemporary Amsterdam in design hotel', 'active');
 
 -- ======================================
 -- 7. SAMPLE RESERVATIONS
