@@ -11,7 +11,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <QtMoc Include="src\core\main.cpp">
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(Filename).moc</QtMocFileName>
+      <DynamicSource Condition="'$(Configuration)|$(Platform)'=='Release|x64'">input</DynamicSource>
+      <QtMocFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(Filename).moc</QtMocFileName>
+    </QtMoc>
+    <QtMoc Include="include\network\Client_Handler.h" />
+    <QtMoc Include="include\network\Socket_Server.h" />
+    <ClCompile Include="src\database\Database_Manager.cpp" />
+    <ClCompile Include="src\network\Client_Handler.cpp" />
+    <ClCompile Include="src\network\Protocol_Handler.cpp" />
+    <ClCompile Include="src\network\Socket_Server.cpp" />
+    <ClCompile Include="src\utils\utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config\config.h" />
+    <ClInclude Include="include\database\Database_Manager.h" />
+    <ClInclude Include="include\models\Accommodation_Data.h" />
+    <ClInclude Include="include\models\Accommodation_Type_Data.h" />
+    <ClInclude Include="include\models\All_Data_Structures.h" />
+    <ClInclude Include="include\models\Destination_Data.h" />
+    <ClInclude Include="include\models\Offer_Data.h" />
+    <ClInclude Include="include\models\Reservation_Data.h" />
+    <ClInclude Include="include\models\Reservation_Person_Data.h" />
+    <ClInclude Include="include\models\Transport_Type_Data.h" />
+    <ClInclude Include="include\models\User_Data.h" />
+    <ClInclude Include="include\network\Network_Types.h" />
+    <ClInclude Include="include\network\Protocol_Handler.h" />
+    <ClInclude Include="include\utils\utils.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{97956EF9-1585-4FAD-8934-B77CFAF2FC1A}</ProjectGuid>
@@ -40,12 +68,12 @@
   </ImportGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>Qt 6.9.1 MSVC2022 64bit</QtInstall>
-    <QtModules>core;network;sql</QtModules>
+    <QtModules>core;network;sql;widgets</QtModules>
     <QtBuildConfig>debug</QtBuildConfig>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'" Label="QtSettings">
     <QtInstall>Qt 6.9.1 MSVC2022 64bit</QtInstall>
-    <QtModules>core</QtModules>
+    <QtModules>core;network;sql;widgets</QtModules>
     <QtBuildConfig>release</QtBuildConfig>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
@@ -72,6 +100,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,6 +115,7 @@
       <ConformanceMode>true</ConformanceMode>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)config;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
