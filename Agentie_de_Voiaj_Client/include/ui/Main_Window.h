@@ -53,6 +53,11 @@ private slots:
     void on_offers_loaded();
     void on_reservations_loaded();
     void on_user_info_updated();
+    
+    // Profile management slots
+    void on_edit_profile_clicked();
+    void on_save_profile_clicked();
+    void on_cancel_profile_clicked();
 
 private:
     void setup_ui();
@@ -77,6 +82,11 @@ private:
     void refresh_destinations_display();
     void refresh_offers_display();
     void refresh_reservations_display();
+    
+    // Profile management helpers
+    void load_profile_data();
+    void set_profile_edit_mode(bool edit_mode);
+    bool validate_profile_data();
     
     // Card creation methods
     QWidget* create_destination_card(const Destination_Model::Destination& destination);
@@ -114,6 +124,7 @@ private:
     QLabel* m_title_label;
     QLabel* m_user_info_label;
     QPushButton* m_user_menu_button;
+    QPushButton* m_logout_button;
     QPushButton* m_theme_toggle_button;
 
     // Models

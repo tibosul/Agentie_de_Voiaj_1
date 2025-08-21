@@ -140,12 +140,12 @@ private:
     Request_Type m_current_request_type;
     QByteArray m_receive_buffer;
     
-    // Store pending request when not connected
+    // Store pending requests when not connected
     struct Pending_Request {
         Request_Type type;
         QJsonObject data;
     };
-    std::optional<Pending_Request> m_pending_request;
+    QList<Pending_Request> m_pending_requests;
 
     	static constexpr int DEFAULT_TIMEOUT_MS = 15000; // 15 seconds - matches config.h
     static constexpr int DEFAULT_PORT = 8080;

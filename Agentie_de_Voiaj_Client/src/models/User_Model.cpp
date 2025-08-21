@@ -226,6 +226,10 @@ void User_Model::update_user_data_from_json(const QJsonObject& jsonData)
     {
         m_user_data.id = jsonData["ID"].toString().toInt();
     }
+    if (jsonData.contains("User_ID"))
+    {
+        m_user_data.id = jsonData["User_ID"].toInt();
+    }
     if (jsonData.contains("Username"))
     {
         m_user_data.username = jsonData["Username"].toString();

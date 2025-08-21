@@ -49,6 +49,7 @@ Main_Window::Main_Window(QWidget* parent)
     , m_title_label(nullptr)
     , m_user_info_label(nullptr)
     , m_user_menu_button(nullptr)
+    , m_logout_button(nullptr)
     , m_theme_toggle_button(nullptr)
     , m_user_model(std::make_unique<User_Model>(this))
     , m_destination_model(std::make_unique<Destination_Model>(this))
@@ -172,7 +173,7 @@ void Main_Window::setup_ui()
     );
     headerLayout->addWidget(m_theme_toggle_button);
     
-    // User menu button
+    // User menu button (login when not authenticated)
     m_user_menu_button = new QPushButton("👤");
     m_user_menu_button->setFixedSize(40, 40);
     m_user_menu_button->setStyleSheet(
@@ -186,7 +187,26 @@ void Main_Window::setup_ui()
         "background-color: rgba(255,255,255,0.3); "
         "}"
     );
+    m_user_menu_button->setToolTip("Conectare");
     headerLayout->addWidget(m_user_menu_button);
+    
+    // Logout button (hidden when not authenticated)
+    m_logout_button = new QPushButton("🚪");
+    m_logout_button->setFixedSize(40, 40);
+    m_logout_button->setStyleSheet(
+        "QPushButton { "
+        "background-color: rgba(255,255,255,0.2); "
+        "border: 2px solid rgba(255,255,255,0.3); "
+        "border-radius: 20px; "
+        "font-size: 16px; "
+        "} "
+        "QPushButton:hover { "
+        "background-color: rgba(255,100,100,0.4); "
+        "}"
+    );
+    m_logout_button->setToolTip("Deconectare");
+    m_logout_button->setVisible(false); // Hidden initially
+    headerLayout->addWidget(m_logout_button);
     
     mainLayout->addWidget(m_header_widget);
     
@@ -751,6 +771,7 @@ void Main_Window::create_profile_tab()
         "}"
     );
     editButton->setEnabled(false);
+    connect(editButton, &QPushButton::clicked, this, &Main_Window::on_edit_profile_clicked);
     buttonsLayout->addWidget(editButton);
     
     QPushButton* saveButton = new QPushButton("💾 Salvează");
@@ -769,6 +790,7 @@ void Main_Window::create_profile_tab()
     );
     saveButton->setEnabled(false);
     saveButton->hide();
+    connect(saveButton, &QPushButton::clicked, this, &Main_Window::on_save_profile_clicked);
     buttonsLayout->addWidget(saveButton);
     
     QPushButton* cancelButton = new QPushButton("❌ Anulează");
@@ -787,9 +809,28 @@ void Main_Window::create_profile_tab()
     );
     cancelButton->setEnabled(false);
     cancelButton->hide();
+    connect(cancelButton, &QPushButton::clicked, this, &Main_Window::on_cancel_profile_clicked);
     buttonsLayout->addWidget(cancelButton);
     
     buttonsLayout->addStretch();
+    
+    // Logout button in profile
+    QPushButton* profileLogoutButton = new QPushButton("🚪 Deconectare");
+    profileLogoutButton->setStyleSheet(
+        "QPushButton { "
+        "background-color: #c0392b; "
+        "color: white; "
+        "border: none; "
+        "padding: 10px 20px; "
+        "border-radius: 4px; "
+        "font-weight: bold; "
+        "} "
+        "QPushButton:hover { "
+        "background-color: #a93226; "
+        "}"
+    );
+    connect(profileLogoutButton, &QPushButton::clicked, this, &Main_Window::on_logout_action);
+    buttonsLayout->addWidget(profileLogoutButton);
     profileLayout->addLayout(buttonsLayout, 5, 0, 1, 2);
     
     profileFormLayout->addWidget(profileGroup);
@@ -891,6 +932,7 @@ void Main_Window::setup_connections()
     
     // Header buttons
     connect(m_user_menu_button, &QPushButton::clicked, this, &Main_Window::on_login_action);
+    connect(m_logout_button, &QPushButton::clicked, this, &Main_Window::on_logout_action);
     connect(m_theme_toggle_button, &QPushButton::clicked, this, &Main_Window::on_toggle_theme_action);
     
     // User model connections
@@ -982,7 +1024,29 @@ void Main_Window::on_logout_action()
         return;
     }
     
-    m_user_model->logout();
+    // Ask for confirmation before logout
+    QMessageBox::StandardButton reply = QMessageBox::question(
+        this,
+        "Confirmare deconectare",
+        "Sigur doriți să vă deconectați?",
+        QMessageBox::Yes | QMessageBox::No,
+        QMessageBox::No
+    );
+    
+    if (reply == QMessageBox::Yes) {
+        qDebug() << "Main_Window: User confirmed logout, proceeding";
+        
+        // Show temporary message
+        m_status_bar->showMessage("Se deconectează...", 2000);
+        
+        // Perform logout
+        m_user_model->logout();
+        
+        // Switch to first tab (Destinations) after logout
+        m_tab_widget->setCurrentIndex(0);
+    } else {
+        qDebug() << "Main_Window: User cancelled logout";
+    }
 }
 
 void Main_Window::on_exit_action()
@@ -1082,6 +1146,11 @@ void Main_Window::on_user_logged_in()
 
 void Main_Window::on_user_logged_out()
 {
+    qDebug() << "Main_Window: User logged out successfully";
+    
+    // Show logout confirmation message
+    m_status_bar->showMessage("Deconectare reușită. La revedere!", 3000);
+    
     show_login_prompt();
     update_ui_for_authentication_state();
 }
@@ -1140,26 +1209,36 @@ void Main_Window::on_reservations_loaded()
 
 void Main_Window::on_user_info_updated()
 {
+    qDebug() << "Main_Window: User info updated, loading profile data";
+    
+    // Check if profile widgets are initialized
+    if (!m_profile_username_edit || !m_profile_email_edit || 
+        !m_profile_first_name_edit || !m_profile_last_name_edit || 
+        !m_profile_phone_edit || !m_profile_edit_button) {
+        qWarning() << "Main_Window: Profile widgets not initialized, skipping user info update";
+        return;
+    }
+    
     if (m_is_authenticated) {
-        m_profile_username_edit->setText(m_user_model->get_username());
-        m_profile_email_edit->setText(m_user_model->get_email());
-        m_profile_first_name_edit->setText(m_user_model->get_first_name());
-        m_profile_last_name_edit->setText(m_user_model->get_last_name());
-        m_profile_phone_edit->setText(m_user_model->get_phone());
+        // Load profile data into form
+        load_profile_data();
         
+        // Enable edit button
         m_profile_edit_button->setEnabled(true);
-        m_profile_save_button->show();
-        m_profile_cancel_button->hide();
+        
+        // Ensure we're in view mode initially
+        set_profile_edit_mode(false);
     } else {
+        // Clear profile form
         m_profile_username_edit->setText("Neconectat");
         m_profile_email_edit->setText("");
         m_profile_first_name_edit->setText("");
         m_profile_last_name_edit->setText("");
         m_profile_phone_edit->setText("");
         
+        // Disable edit button
         m_profile_edit_button->setEnabled(false);
-        m_profile_save_button->hide();
-        m_profile_cancel_button->hide();
+        set_profile_edit_mode(false);
     }
 }
 
@@ -1168,6 +1247,12 @@ void Main_Window::update_ui_for_authentication_state()
     // Update menu actions
     m_login_action->setEnabled(!m_is_authenticated);
     m_logout_action->setEnabled(m_is_authenticated);
+    
+    // Update header buttons
+    if (m_user_menu_button && m_logout_button) {
+        m_user_menu_button->setVisible(!m_is_authenticated);
+        m_logout_button->setVisible(m_is_authenticated);
+    }
     
     // Update user info
     if (m_is_authenticated) {
@@ -1189,6 +1274,15 @@ void Main_Window::update_ui_for_authentication_state()
     if (m_profile_auth_widget && m_profile_form_widget) {
         m_profile_auth_widget->setVisible(!m_is_authenticated);
         m_profile_form_widget->setVisible(m_is_authenticated);
+        
+        // Load user info when authenticated (delayed to ensure widgets are ready)
+        if (m_is_authenticated && m_user_model) {
+            QTimer::singleShot(0, [this]() {
+                if (m_user_model) {
+                    m_user_model->refresh_user_info();
+                }
+            });
+        }
     }
     
     // Update reservations visibility
@@ -1553,5 +1647,158 @@ QWidget* Main_Window::create_destination_card(const Destination_Model::Destinati
     cardLayout->addWidget(viewButton);
     
     return card;
+}
+
+// Profile management implementation
+void Main_Window::on_edit_profile_clicked()
+{
+    qDebug() << "Main_Window: Edit profile button clicked";
+    set_profile_edit_mode(true);
+}
+
+void Main_Window::on_save_profile_clicked()
+{
+    qDebug() << "Main_Window: Save profile button clicked";
+    
+    if (!validate_profile_data()) {
+        return;
+    }
+    
+    // Get updated data from form fields
+    QString email = m_profile_email_edit->text().trimmed();
+    QString firstName = m_profile_first_name_edit->text().trimmed();
+    QString lastName = m_profile_last_name_edit->text().trimmed();
+    QString phone = m_profile_phone_edit->text().trimmed();
+    
+    qDebug() << "Main_Window: Updating profile with data:"
+             << "Email:" << email 
+             << "FirstName:" << firstName
+             << "LastName:" << lastName
+             << "Phone:" << phone;
+    
+    // Send update request to server
+    if (m_user_model) {
+        m_user_model->update_user_info(email, firstName, lastName, phone);
+        
+        // Show temporary success message
+        m_status_bar->showMessage("Profilul a fost actualizat cu succes!", 3000);
+    }
+    
+    set_profile_edit_mode(false);
+}
+
+void Main_Window::on_cancel_profile_clicked()
+{
+    qDebug() << "Main_Window: Cancel profile button clicked";
+    
+    // Reload original data
+    load_profile_data();
+    set_profile_edit_mode(false);
+}
+
+void Main_Window::load_profile_data()
+{
+    if (!m_user_model) {
+        qWarning() << "Main_Window: User model is null, cannot load profile data";
+        return;
+    }
+    
+    if (!m_user_model->is_logged_in()) {
+        qDebug() << "Main_Window: User not logged in, cannot load profile data";
+        return;
+    }
+    
+    // Check if profile widgets are initialized
+    if (!m_profile_username_edit || !m_profile_email_edit || 
+        !m_profile_first_name_edit || !m_profile_last_name_edit || 
+        !m_profile_phone_edit) {
+        qWarning() << "Main_Window: Profile widgets not initialized, cannot load profile data";
+        return;
+    }
+    
+    qDebug() << "Main_Window: Loading profile data";
+    
+    // Populate form fields using User_Model getters
+    m_profile_username_edit->setText(m_user_model->get_username());
+    m_profile_email_edit->setText(m_user_model->get_email());
+    m_profile_first_name_edit->setText(m_user_model->get_first_name());
+    m_profile_last_name_edit->setText(m_user_model->get_last_name());
+    m_profile_phone_edit->setText(m_user_model->get_phone());
+}
+
+void Main_Window::set_profile_edit_mode(bool edit_mode)
+{
+    qDebug() << "Main_Window: Setting profile edit mode to:" << edit_mode;
+    
+    // Check if profile widgets are initialized
+    if (!m_profile_email_edit || !m_profile_first_name_edit || 
+        !m_profile_last_name_edit || !m_profile_phone_edit ||
+        !m_profile_edit_button || !m_profile_save_button || 
+        !m_profile_cancel_button) {
+        qWarning() << "Main_Window: Profile widgets not initialized, cannot set edit mode";
+        return;
+    }
+    
+    // Enable/disable form fields (username is always disabled)
+    m_profile_email_edit->setEnabled(edit_mode);
+    m_profile_first_name_edit->setEnabled(edit_mode);
+    m_profile_last_name_edit->setEnabled(edit_mode);
+    m_profile_phone_edit->setEnabled(edit_mode);
+    
+    // Show/hide appropriate buttons
+    m_profile_edit_button->setVisible(!edit_mode);
+    m_profile_save_button->setVisible(edit_mode);
+    m_profile_cancel_button->setVisible(edit_mode);
+    
+    // Enable buttons
+    m_profile_edit_button->setEnabled(!edit_mode);
+    m_profile_save_button->setEnabled(edit_mode);
+    m_profile_cancel_button->setEnabled(edit_mode);
+    
+    if (edit_mode) {
+        // Focus first editable field
+        m_profile_email_edit->setFocus();
+    }
+}
+
+bool Main_Window::validate_profile_data()
+{
+    // Email validation
+    QString email = m_profile_email_edit->text().trimmed();
+    if (email.isEmpty() || !email.contains("@")) {
+        QMessageBox::warning(this, "Date invalide", 
+                           "Vă rugăm să introduceți o adresă de email validă.");
+        m_profile_email_edit->setFocus();
+        return false;
+    }
+    
+    // First name validation
+    QString firstName = m_profile_first_name_edit->text().trimmed();
+    if (firstName.isEmpty()) {
+        QMessageBox::warning(this, "Date invalide", 
+                           "Vă rugăm să introduceți prenumele.");
+        m_profile_first_name_edit->setFocus();
+        return false;
+    }
+    
+    // Last name validation
+    QString lastName = m_profile_last_name_edit->text().trimmed();
+    if (lastName.isEmpty()) {
+        QMessageBox::warning(this, "Date invalide", 
+                           "Vă rugăm să introduceți numele de familie.");
+        m_profile_last_name_edit->setFocus();
+        return false;
+    }
+    
+    // Phone validation (optional but if provided should be valid)
+    QString phone = m_profile_phone_edit->text().trimmed();
+    if (!phone.isEmpty() && phone.length() < 7) {
+        QMessageBox::warning(this, "Date invalide", 
+                           "Numărul de telefon pare să fie prea scurt.");
+        m_profile_phone_edit->setFocus();
+        return false;
+    }
+    
+    return true;
 }
 

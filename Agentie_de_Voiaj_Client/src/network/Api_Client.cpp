@@ -329,10 +329,18 @@ void Api_Client::logout()
 
 void Api_Client::get_destinations()
 {
+    qDebug() << "Api_Client: === GET_DESTINATIONS REQUEST ===";
+    qDebug() << "Api_Client: Building request data";
+    
     QJsonObject requestData;
     requestData["type"] = "GET_DESTINATIONS";
     
+    qDebug() << "Api_Client: Request data:" << requestData;
+    qDebug() << "Api_Client: Calling send_request with Request_Type::Get_Destinations";
+    
     send_request(Request_Type::Get_Destinations, requestData);
+    
+    qDebug() << "Api_Client: send_request call completed";
 }
 
 void Api_Client::get_offers()
@@ -465,7 +473,9 @@ void Api_Client::send_request(Request_Type type, const QJsonObject& data)
         // Store the request for sending after connection is established
         {
             QMutexLocker locker(&m_mutex);
-            m_pending_request = Pending_Request{type, data};
+            m_pending_requests.append(Pending_Request{type, data});
+            qDebug() << "Api_Client: Added pending request:" << request_type_to_string(type) 
+                     << "- Total pending:" << m_pending_requests.size();
         }
         connect_to_server();
         return;
@@ -530,22 +540,22 @@ void Api_Client::on_socket_connected()
     // Start keepalive timer
     m_keepalive_timer->start();
     
-    std::optional<Pending_Request> pending;
+    QList<Pending_Request> pending_requests;
     {
         QMutexLocker locker(&m_mutex);
         m_is_connected = true;
-        pending = m_pending_request;
-        m_pending_request.reset();
+        pending_requests = m_pending_requests;
+        m_pending_requests.clear();
     }
     
     emit connection_status_changed(true);
     
-    // Send pending request if exists
-    if (pending.has_value())
+    // Send all pending requests
+    for (const auto& pending : pending_requests)
     {
-        qDebug() << "Sending pending request:" << request_type_to_string(pending->type);
-        m_current_request_type = pending->type;
-        send_json_message(pending->data);
+        qDebug() << "Sending pending request:" << request_type_to_string(pending.type);
+        m_current_request_type = pending.type;
+        send_json_message(pending.data);
     }
 }
 
@@ -700,10 +710,10 @@ void Api_Client::on_request_timeout()
     // The connection might still be valid, just this specific request failed
     emit_error("Request timeout - server did not respond in time");
     
-    // Clear pending request if any
+    // Clear pending requests if any
     {
         QMutexLocker locker(&m_mutex);
-        m_pending_request.reset();
+        m_pending_requests.clear();
     }
 }
 
@@ -824,6 +834,7 @@ void Api_Client::process_data_response(Request_Type type, const Api_Response& re
     switch (type)
     {
         case Request_Type::Get_Destinations:
+            qDebug() << "Api_Client: Emitting destinations_received signal with" << dataArray.size() << "destinations";
             emit destinations_received(dataArray);
             break;
             

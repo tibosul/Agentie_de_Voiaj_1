@@ -76,13 +76,17 @@ void Destination_Model::refresh_destinations()
 {
     if (m_is_loading)
     {
+        qDebug() << "Destination_Model: Already loading, skipping refresh";
         return;
     }
     
     m_is_loading = true;
-    qDebug() << "Destination_Model: Refreshing destinations...";
+    qDebug() << "Destination_Model: === REFRESHING DESTINATIONS ===";
+    qDebug() << "Destination_Model: Setting loading state to true";
+    qDebug() << "Destination_Model: Calling Api_Client::get_destinations()";
     
     Api_Client::instance().get_destinations();
+    qDebug() << "Destination_Model: Api_Client::get_destinations() call completed";
 }
 
 void Destination_Model::clear_destinations()
