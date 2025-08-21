@@ -1332,7 +1332,6 @@ QWidget* Main_Window::create_offer_card(const Offer_Model::Offer& offer)
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.1); "
         "}"
     );
     
@@ -1397,7 +1396,6 @@ QWidget* Main_Window::create_reservation_card(const Reservation_Model::Reservati
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0 2px 8px rgba(0,0,0,0.1); "
         "}"
     );
     
@@ -1470,7 +1468,6 @@ QWidget* Main_Window::create_destination_card(const Destination_Model::Destinati
         "} "
         "QWidget:hover { "
         "border-color: #4a90e2; "
-        "box-shadow: 0px 4px 8px rgba(74, 144, 226, 0.3); "
         "}"
     );
     
