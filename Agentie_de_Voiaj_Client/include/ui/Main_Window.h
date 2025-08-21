@@ -74,10 +74,12 @@ private:
     void show_loading_indicator(bool show);
     
     // UI refresh methods
+    void refresh_destinations_display();
     void refresh_offers_display();
     void refresh_reservations_display();
     
     // Card creation methods
+    QWidget* create_destination_card(const Destination_Model::Destination& destination);
     QWidget* create_offer_card(const int offer_index);
     QWidget* create_reservation_card(const int reservation_index);
     QWidget* create_offer_card(const Offer_Model::Offer& offer);
@@ -119,6 +121,12 @@ private:
     std::unique_ptr<Destination_Model> m_destination_model;
     std::unique_ptr<Offer_Model> m_offer_model;
     std::unique_ptr<Reservation_Model> m_reservation_model;
+
+    // Destinations tab UI references
+    QWidget* m_destinations_container;
+    QGridLayout* m_destinations_container_layout;
+    QLabel* m_destinations_loading_label;
+    QLabel* m_destinations_no_data_label;
 
     // Offers tab UI references
     QWidget* m_offers_container;

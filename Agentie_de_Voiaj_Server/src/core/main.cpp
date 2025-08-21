@@ -57,8 +57,8 @@ public:
 };
 
 // Original main function - commented out for database testing
-/*
-int main_original(int argc, char *argv[])
+
+int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     
@@ -71,7 +71,7 @@ int main_original(int argc, char *argv[])
     qDebug() << "Port:" << Config::Server::PORT;
     qDebug() << "Max Connections:" << Config::Server::MAX_CONNECTIONS;
     qDebug() << QString(50, '=');
-    
+
     // Create server application for signal handling
     ServerApplication serverApp;
     
@@ -220,7 +220,7 @@ int main_original(int argc, char *argv[])
         qDebug() << "SERVER RUNNING" << (db_manager && db_manager->is_running_in_demo_mode() ? " (DEMO MODE)" : "");
         qDebug() << "Check logs/server_" << Utils::DateTime::get_current_date() << ".log for detailed logs";
         qDebug() << QString(50, '=');
-        
+
         // Run Qt event loop instead of manual loop
         return app.exec();
         
@@ -231,109 +231,109 @@ int main_original(int argc, char *argv[])
         return -1;
     }
 }
-*/
+
 
 // Temporary main function for database testing
-int main(int argc, char *argv[])
-{
-    QCoreApplication app(argc, argv);
-
-    qDebug() << "=== TEMPORARY MAIN FUNCTION FOR DATABASE TESTING ===";
-    
-    // Create database manager instance
-    Database::Database_Manager db_manager;
-    
-    // Set connection parameters for SQL Server external database
-    QString server = "DESKTOP-tibosul\\SQLEXPRESS"; // Your SQL Server instance name
-    QString database = "Agentie_de_Voiaj"; // Your database name
-    QString username = ""; // leave empty for Windows Authentication 
-    QString password = ""; // leave empty for Windows Authentication
-    
-    qDebug() << "Attempting to connect to database...";
-    qDebug() << "Server:" << server;
-    qDebug() << "Database:" << database;
-    
-    // Try to connect
-    if (db_manager.connect(server, database, username, password))
-    {
-        qDebug() << "✓ Database connection successful!";
-        
-        // Query Users table
-        qDebug() << "\n=== USERS TABLE CONTENT ===";
-        Database::Query_Result result = db_manager.execute_select("SELECT * FROM Users");
-        
-        if (result.is_success())
-        {
-            if (result.has_data())
-            {
-                qDebug() << QString("Found %1 users in the database:").arg(result.data.size());
-                qDebug() << "----------------------------------------";
-                
-                for (int i = 0; i < result.data.size(); ++i)
-                {
-                    const auto& user = result.data[i];
-                    qDebug() << QString("User %1:").arg(i + 1);
-                    qDebug() << QString("  ID: %1").arg(user["User_ID"].toInt());
-                    qDebug() << QString("  Username: %1").arg(user["Username"].toString());
-                    qDebug() << QString("  Email: %1").arg(user["Email"].toString());
-                    qDebug() << QString("  First Name: %1").arg(user["First_Name"].toString());
-                    qDebug() << QString("  Last Name: %1").arg(user["Last_Name"].toString());
-                    qDebug() << QString("  Phone: %1").arg(user["Phone"].toString());
-                    qDebug() << QString("  Date Created: %1").arg(user["Date_Created"].toString());
-                    qDebug() << "----------------------------------------";
-                }
-            }
-            else
-            {
-                qDebug() << "✓ Query executed successfully, but Users table is empty.";
-            }
-        }
-        else
-        {
-            qDebug() << "✗ Failed to query Users table:" << result.message;
-        }
-        
-        // Also try to query other tables to verify database structure
-        qDebug() << "\n=== CHECKING OTHER TABLES ===";
-        QStringList tables = {"Destinations", "Types_of_Transport", "Types_of_Accommodation", "Offers", "Reservations"};
-        
-        for (const QString& table : tables)
-        {
-            Database::Query_Result count_result = db_manager.execute_select(QString("SELECT COUNT(*) as record_count FROM %1").arg(table));
-            if (count_result.is_success() && count_result.has_data())
-            {
-                int count = count_result.data[0]["record_count"].toInt();
-                qDebug() << QString("Table %1: %2 records").arg(table).arg(count);
-            }
-            else
-            {
-                qDebug() << QString("Table %1: Error or doesn't exist").arg(table);
-            }
-        }
-        
-        db_manager.disconnect();
-        qDebug() << "\n✓ Database disconnected successfully.";
-    }
-    else
-    {
-        qDebug() << "✗ Failed to connect to database!";
-        qDebug() << "Connection string:" << db_manager.get_connection_string();
-        qDebug() << "Last error:" << db_manager.get_last_error();
-        
-        qDebug() << "\nPlease check:";
-        qDebug() << "1. SQL Server is running";
-        qDebug() << "2. SQL Server instance name is correct (e.g., .\\SQLEXPRESS or DESKTOP-tibosul\\SQLEXPRESS)";
-        qDebug() << "3. Database 'Agentie_de_Voiaj' exists";
-        qDebug() << "4. Windows Authentication is enabled OR provide SQL credentials";
-        qDebug() << "5. SQL Server TCP/IP protocol is enabled";
-        qDebug() << "6. Firewall allows SQL Server connections";
-    }
-    
-    qDebug() << "\n=== DATABASE TEST COMPLETED ===";
-    qDebug() << "Press Ctrl+C to exit...";
-    
-    return app.exec();
-}
+//int main(int argc, char *argv[])
+//{
+//    QCoreApplication app(argc, argv);
+//
+//    qDebug() << "=== TEMPORARY MAIN FUNCTION FOR DATABASE TESTING ===";
+//    
+//    // Create database manager instance
+//    Database::Database_Manager db_manager;
+//    
+//    // Set connection parameters for SQL Server external database
+//    QString server = "DESKTOP-tibosul\\SQLEXPRESS"; // Your SQL Server instance name
+//    QString database = "Agentie_de_Voiaj"; // Your database name
+//    QString username = ""; // leave empty for Windows Authentication 
+//    QString password = ""; // leave empty for Windows Authentication
+//    
+//    qDebug() << "Attempting to connect to database...";
+//    qDebug() << "Server:" << server;
+//    qDebug() << "Database:" << database;
+//    
+//    // Try to connect
+//    if (db_manager.connect(server, database, username, password))
+//    {
+//        qDebug() << "✓ Database connection successful!";
+//        
+//        // Query Users table
+//        qDebug() << "\n=== USERS TABLE CONTENT ===";
+//        Database::Query_Result result = db_manager.execute_select("SELECT * FROM Users");
+//        
+//        if (result.is_success())
+//        {
+//            if (result.has_data())
+//            {
+//                qDebug() << QString("Found %1 users in the database:").arg(result.data.size());
+//                qDebug() << "----------------------------------------";
+//                
+//                for (int i = 0; i < result.data.size(); ++i)
+//                {
+//                    const auto& user = result.data[i];
+//                    qDebug() << QString("User %1:").arg(i + 1);
+//                    qDebug() << QString("  ID: %1").arg(user["User_ID"].toInt());
+//                    qDebug() << QString("  Username: %1").arg(user["Username"].toString());
+//                    qDebug() << QString("  Email: %1").arg(user["Email"].toString());
+//                    qDebug() << QString("  First Name: %1").arg(user["First_Name"].toString());
+//                    qDebug() << QString("  Last Name: %1").arg(user["Last_Name"].toString());
+//                    qDebug() << QString("  Phone: %1").arg(user["Phone"].toString());
+//                    qDebug() << QString("  Date Created: %1").arg(user["Date_Created"].toString());
+//                    qDebug() << "----------------------------------------";
+//                }
+//            }
+//            else
+//            {
+//                qDebug() << "✓ Query executed successfully, but Users table is empty.";
+//            }
+//        }
+//        else
+//        {
+//            qDebug() << "✗ Failed to query Users table:" << result.message;
+//        }
+//        
+//        // Also try to query other tables to verify database structure
+//        qDebug() << "\n=== CHECKING OTHER TABLES ===";
+//        QStringList tables = {"Destinations", "Types_of_Transport", "Types_of_Accommodation", "Offers", "Reservations"};
+//        
+//        for (const QString& table : tables)
+//        {
+//            Database::Query_Result count_result = db_manager.execute_select(QString("SELECT COUNT(*) as record_count FROM %1").arg(table));
+//            if (count_result.is_success() && count_result.has_data())
+//            {
+//                int count = count_result.data[0]["record_count"].toInt();
+//                qDebug() << QString("Table %1: %2 records").arg(table).arg(count);
+//            }
+//            else
+//            {
+//                qDebug() << QString("Table %1: Error or doesn't exist").arg(table);
+//            }
+//        }
+//        
+//        db_manager.disconnect();
+//        qDebug() << "\n✓ Database disconnected successfully.";
+//    }
+//    else
+//    {
+//        qDebug() << "✗ Failed to connect to database!";
+//        qDebug() << "Connection string:" << db_manager.get_connection_string();
+//        qDebug() << "Last error:" << db_manager.get_last_error();
+//        
+//        qDebug() << "\nPlease check:";
+//        qDebug() << "1. SQL Server is running";
+//        qDebug() << "2. SQL Server instance name is correct (e.g., .\\SQLEXPRESS or DESKTOP-tibosul\\SQLEXPRESS)";
+//        qDebug() << "3. Database 'Agentie_de_Voiaj' exists";
+//        qDebug() << "4. Windows Authentication is enabled OR provide SQL credentials";
+//        qDebug() << "5. SQL Server TCP/IP protocol is enabled";
+//        qDebug() << "6. Firewall allows SQL Server connections";
+//    }
+//    
+//    qDebug() << "\n=== DATABASE TEST COMPLETED ===";
+//    qDebug() << "Press Ctrl+C to exit...";
+//    
+//    return app.exec();
+//}
 
 #include "main.moc"
 

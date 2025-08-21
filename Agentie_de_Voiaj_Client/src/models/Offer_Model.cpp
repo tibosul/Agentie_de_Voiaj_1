@@ -192,7 +192,8 @@ QVector<Offer_Model::Offer> Offer_Model::get_available_offers() const
     
     for (const auto& offer : m_offers)
     {
-        if (offer.available_seats > 0 && offer.status == "Available")
+        // Server sends status as "active" for available offers
+        if (offer.available_seats > 0 && offer.status.toLower() == "active")
             results.append(offer);
     }
     
@@ -301,21 +302,27 @@ Offer_Model::Offer Offer_Model::offer_from_json(const QJsonObject& jsonObj) cons
 {
     Offer offer;
     
-    offer.id = jsonObj["Offer_ID"].toString().toInt();
+    // Map JSON fields from server response to offer structure
+    offer.id = jsonObj["Offer_ID"].toInt();
     offer.name = jsonObj["Name"].toString();
-    offer.destination = jsonObj["Destination"].toString();
-    offer.price_per_person = jsonObj["Price_per_Person"].toString().toDouble();
-    offer.duration_days = jsonObj["Duration_Days"].toString().toInt();
-    offer.available_seats = jsonObj["Available_Seats"].toString().toInt();
+    offer.destination = jsonObj["Destination_Name"].toString(); // Server sends Destination_Name ✅
+    offer.price_per_person = jsonObj["Price_per_Person"].toDouble(); // Server sends as number ✅
+    offer.duration_days = jsonObj["Duration_Days"].toInt();
+    
+    // Calculate available seats: Total_Seats - Reserved_Seats
+    int total_seats = jsonObj["Total_Seats"].toInt();
+    int reserved_seats = jsonObj["Reserved_Seats"].toInt();
+    offer.available_seats = total_seats - reserved_seats;
+    
     offer.description = jsonObj["Description"].toString();
-    offer.image_path = jsonObj["Image_Path"].toString();
+    offer.image_path = jsonObj["Image_Path"].toString(); // May be empty from server
     offer.status = jsonObj["Status"].toString();
     
-    // Parse dates if available
-    if (jsonObj.contains("Start_Date"))
-        offer.start_date = QDateTime::fromString(jsonObj["Start_Date"].toString(), Qt::ISODate);
-    if (jsonObj.contains("End_Date"))
-        offer.end_date = QDateTime::fromString(jsonObj["End_Date"].toString(), Qt::ISODate);
+    // Parse dates - server sends Departure_Date and Return_Date
+    if (jsonObj.contains("Departure_Date"))
+        offer.start_date = QDateTime::fromString(jsonObj["Departure_Date"].toString(), "yyyy-MM-dd");
+    if (jsonObj.contains("Return_Date"))
+        offer.end_date = QDateTime::fromString(jsonObj["Return_Date"].toString(), "yyyy-MM-dd");
     
     offer.created_at = jsonObj["Date_Created"].toString();
     offer.modified_at = jsonObj["Date_Modified"].toString();

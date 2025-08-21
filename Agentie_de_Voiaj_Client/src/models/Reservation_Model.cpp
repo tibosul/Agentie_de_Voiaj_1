@@ -291,15 +291,16 @@ Reservation_Model::Reservation Reservation_Model::reservation_from_json(const QJ
 {
     Reservation reservation;
     
-    reservation.id = jsonObj["Reservation_ID"].toString().toInt();
-    reservation.user_id = jsonObj["User_ID"].toString().toInt();
-    reservation.offer_id = jsonObj["Offer_ID"].toString().toInt();
+    // Map JSON fields from server response to reservation structure  
+    reservation.id = jsonObj["Reservation_ID"].toInt(); // Server sends as number
+    reservation.user_id = jsonObj["User_ID"].toInt();
+    reservation.offer_id = jsonObj["Offer_ID"].toInt();
     reservation.offer_name = jsonObj["Offer_Name"].toString();
-    reservation.destination = jsonObj["Destination"].toString();
-    reservation.person_count = jsonObj["Person_Count"].toString().toInt();
-    reservation.total_price = jsonObj["Total_Price"].toString().toDouble();
+    reservation.destination = jsonObj["Destination_Name"].toString(); // Server sends Destination_Name
+    reservation.person_count = jsonObj["Number_of_Persons"].toInt(); // DB field is Number_of_Persons
+    reservation.total_price = jsonObj["Total_Price"].toDouble();
     
-    // Parse dates if available
+    // Parse dates if available - adjust format based on server response
     if (jsonObj.contains("Reservation_Date"))
         reservation.reservation_date = QDateTime::fromString(jsonObj["Reservation_Date"].toString(), Qt::ISODate);
     if (jsonObj.contains("Travel_Start_Date"))
@@ -308,7 +309,7 @@ Reservation_Model::Reservation Reservation_Model::reservation_from_json(const QJ
         reservation.travel_end_date = QDateTime::fromString(jsonObj["Travel_End_Date"].toString(), Qt::ISODate);
     
     reservation.status = jsonObj["Status"].toString();
-    reservation.special_requests = jsonObj["Special_Requests"].toString();
+    reservation.special_requests = jsonObj["Notes"].toString(); // DB field is Notes, not Special_Requests
     reservation.created_at = jsonObj["Date_Created"].toString();
     reservation.modified_at = jsonObj["Date_Modified"].toString();
     

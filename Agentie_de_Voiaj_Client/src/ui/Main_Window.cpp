@@ -54,6 +54,10 @@ Main_Window::Main_Window(QWidget* parent)
     , m_destination_model(std::make_unique<Destination_Model>(this))
     , m_offer_model(std::make_unique<Offer_Model>(this))
     , m_reservation_model(std::make_unique<Reservation_Model>(this))
+    , m_destinations_container(nullptr)
+    , m_destinations_container_layout(nullptr)
+    , m_destinations_loading_label(nullptr)
+    , m_destinations_no_data_label(nullptr)
     , m_offers_container(nullptr)
     , m_offers_container_layout(nullptr)
     , m_offers_loading_label(nullptr)
@@ -99,8 +103,9 @@ Main_Window::Main_Window(QWidget* parent)
     // Initialize with login prompt
     show_login_prompt();
     
-    // Load destinations
+    // Load data from server
     m_destination_model->refresh_destinations();
+    m_offer_model->refresh_offers();
     
     setWindowTitle("Agentie de Voiaj");
     setMinimumSize(800, 600);
@@ -233,51 +238,26 @@ void Main_Window::create_destinations_tab()
     
     layout->addLayout(searchLayout);
     
-    // Destinations grid (placeholder)
+    // Destinations grid container
     QScrollArea* scrollArea = new QScrollArea();
-    QWidget* scrollContent = new QWidget();
-    QGridLayout* gridLayout = new QGridLayout(scrollContent);
+    m_destinations_container = new QWidget();
+    m_destinations_container_layout = new QGridLayout(m_destinations_container);
+    m_destinations_container_layout->setSpacing(15);
     
-    // Add some placeholder destination cards
-    for (int i = 0; i < 6; ++i) {
-        QWidget* card = new QWidget();
-        card->setFixedSize(300, 200);
-        card->setStyleSheet(
-            "QWidget { "
-            "background-color: white; "
-            "border: 1px solid #e0e0e0; "
-            "border-radius: 8px; "
-            "} "
-            "QWidget:hover { "
-            "border-color: #4a90e2; "
-            "}"
-        );
-        
-        QVBoxLayout* cardLayout = new QVBoxLayout(card);
-        
-        QLabel* imageLabel = new QLabel("📷");
-        imageLabel->setAlignment(Qt::AlignCenter);
-        imageLabel->setStyleSheet("font-size: 48px; background-color: #f8f9fa; border-radius: 4px;");
-        imageLabel->setFixedHeight(120);
-        cardLayout->addWidget(imageLabel);
-        
-        QLabel* nameLabel = new QLabel(QString("Destinația %1").arg(i + 1));
-        nameLabel->setStyleSheet("font-weight: bold; font-size: 16px;");
-        nameLabel->setAlignment(Qt::AlignCenter);
-        cardLayout->addWidget(nameLabel);
-        
-        QLabel* countryLabel = new QLabel("Țara Exemplu");
-        countryLabel->setAlignment(Qt::AlignCenter);
-        countryLabel->setStyleSheet("color: #666;");
-        cardLayout->addWidget(countryLabel);
-        
-        QPushButton* viewButton = new QPushButton("Vezi Oferte");
-        cardLayout->addWidget(viewButton);
-        
-        gridLayout->addWidget(card, i / 3, i % 3);
-    }
+    // Loading label
+    m_destinations_loading_label = new QLabel("🔄 Se încarcă destinațiile...");
+    m_destinations_loading_label->setAlignment(Qt::AlignCenter);
+    m_destinations_loading_label->setStyleSheet("font-size: 18px; color: #3498db; font-weight: bold; padding: 50px;");
+    m_destinations_container_layout->addWidget(m_destinations_loading_label, 0, 0, 1, 3);
     
-    scrollArea->setWidget(scrollContent);
+    // No destinations label
+    m_destinations_no_data_label = new QLabel("📭 Nu s-au găsit destinații disponibile");
+    m_destinations_no_data_label->setAlignment(Qt::AlignCenter);
+    m_destinations_no_data_label->setStyleSheet("font-size: 16px; color: #7f8c8d; font-weight: bold; padding: 50px;");
+    m_destinations_no_data_label->hide();
+    m_destinations_container_layout->addWidget(m_destinations_no_data_label, 0, 0, 1, 3);
+    
+    scrollArea->setWidget(m_destinations_container);
     scrollArea->setWidgetResizable(true);
     layout->addWidget(scrollArea);
     
@@ -1053,8 +1033,42 @@ void Main_Window::on_test_connection_action()
 
 void Main_Window::on_tab_changed(int index)
 {
-    Q_UNUSED(index)
     animate_tab_change();
+    
+    // Load data specific to the selected tab if needed
+    switch (index)
+    {
+        case 0: // Destinations tab
+            // Destinations are loaded at startup, but refresh if empty
+            if (m_destination_model && m_destination_model->get_destination_count() == 0) {
+                m_destination_model->refresh_destinations();
+            }
+            break;
+            
+        case 1: // Offers tab
+            // Offers should be loaded at startup, but refresh if empty
+            if (m_offer_model && m_offer_model->get_offer_count() == 0) {
+                m_offer_model->refresh_offers();
+            }
+            break;
+            
+        case 2: // Reservations tab
+            // Only load reservations if user is authenticated
+            if (m_is_authenticated && m_reservation_model) {
+                m_reservation_model->refresh_reservations();
+            }
+            break;
+            
+        case 3: // Profile tab
+            // Only refresh profile if user is authenticated
+            if (m_is_authenticated && m_user_model) {
+                m_user_model->refresh_user_info();
+            }
+            break;
+            
+        default:
+            break;
+    }
 }
 
 void Main_Window::on_user_logged_in()
@@ -1078,6 +1092,9 @@ void Main_Window::on_authentication_status_changed(bool is_authenticated)
 void Main_Window::on_destinations_loaded()
 {
     m_status_bar->showMessage("Destinații încărcate cu succes", 3000);
+    
+    // Refresh destinations display with real data
+    refresh_destinations_display();
 }
 
 void Main_Window::on_offers_loaded()
@@ -1210,6 +1227,53 @@ void Main_Window::show_loading_indicator(bool show)
     m_progress_bar->setVisible(show);
     if (show) {
         m_progress_bar->setRange(0, 0); // Indeterminate progress
+    }
+}
+
+void Main_Window::refresh_destinations_display()
+{
+    if (!m_destinations_container_layout || !m_destination_model) {
+        return;
+    }
+    
+    // Hide loading indicator
+    if (m_destinations_loading_label) {
+        m_destinations_loading_label->hide();
+    }
+    
+    // Clear existing destination cards (except labels)
+    QLayoutItem* item;
+    while ((item = m_destinations_container_layout->takeAt(0)) != nullptr) {
+        QWidget* widget = item->widget();
+        if (widget && widget != m_destinations_loading_label && widget != m_destinations_no_data_label) {
+            delete widget;
+        }
+        delete item;
+    }
+    
+    // Re-add the labels first
+    m_destinations_container_layout->addWidget(m_destinations_loading_label, 0, 0, 1, 3);
+    m_destinations_container_layout->addWidget(m_destinations_no_data_label, 0, 0, 1, 3);
+    
+    // Add new destination cards
+    const auto& destinations = m_destination_model->get_destinations();
+    
+    if (destinations.isEmpty()) {
+        m_destinations_no_data_label->show();
+    } else {
+        m_destinations_no_data_label->hide();
+        
+        int row = 0, col = 0;
+        for (const auto& destination : destinations) {
+            QWidget* destinationCard = create_destination_card(destination);
+            m_destinations_container_layout->addWidget(destinationCard, row, col);
+            
+            col++;
+            if (col >= 3) { // 3 columns per row
+                col = 0;
+                row++;
+            }
+        }
     }
 }
 
@@ -1392,5 +1456,78 @@ QWidget* Main_Window::create_reservation_card(const int reservation_index)
     
     Reservation_Model::Reservation reservation = m_reservation_model->get_reservation(reservation_index);
     return create_reservation_card(reservation);
+}
+
+QWidget* Main_Window::create_destination_card(const Destination_Model::Destination& destination)
+{
+    QWidget* card = new QWidget();
+    card->setFixedSize(300, 200);
+    card->setStyleSheet(
+        "QWidget { "
+        "background-color: white; "
+        "border: 1px solid #e0e0e0; "
+        "border-radius: 8px; "
+        "} "
+        "QWidget:hover { "
+        "border-color: #4a90e2; "
+        "box-shadow: 0px 4px 8px rgba(74, 144, 226, 0.3); "
+        "}"
+    );
+    
+    QVBoxLayout* cardLayout = new QVBoxLayout(card);
+    cardLayout->setContentsMargins(10, 10, 10, 10);
+    cardLayout->setSpacing(8);
+    
+    // Image placeholder (we can add actual images later)
+    QLabel* imageLabel = new QLabel("🏖️");
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setStyleSheet("font-size: 48px; background-color: #f8f9fa; border-radius: 4px; padding: 10px;");
+    imageLabel->setFixedHeight(100);
+    cardLayout->addWidget(imageLabel);
+    
+    // Destination name
+    QLabel* nameLabel = new QLabel(destination.name);
+    nameLabel->setStyleSheet("font-weight: bold; font-size: 16px; color: #2c3e50;");
+    nameLabel->setAlignment(Qt::AlignCenter);
+    nameLabel->setWordWrap(true);
+    cardLayout->addWidget(nameLabel);
+    
+    // Country
+    QLabel* countryLabel = new QLabel(destination.country);
+    countryLabel->setAlignment(Qt::AlignCenter);
+    countryLabel->setStyleSheet("color: #7f8c8d; font-size: 14px;");
+    countryLabel->setWordWrap(true);
+    cardLayout->addWidget(countryLabel);
+    
+    // View offers button
+    QPushButton* viewButton = new QPushButton("Vezi Oferte");
+    viewButton->setStyleSheet(
+        "QPushButton { "
+        "background-color: #3498db; "
+        "color: white; "
+        "border: none; "
+        "padding: 8px 16px; "
+        "border-radius: 4px; "
+        "font-weight: bold; "
+        "} "
+        "QPushButton:hover { "
+        "background-color: #2980b9; "
+        "}"
+    );
+    
+    // Connect button to show offers for this destination
+    connect(viewButton, &QPushButton::clicked, [this, destination]() {
+        // Switch to offers tab and filter by destination
+        m_tab_widget->setCurrentIndex(1); // Switch to offers tab
+        if (m_offer_model) {
+            // Here we could add filtering by destination functionality
+            // For now, just load all offers
+            m_offer_model->refresh_offers();
+        }
+    });
+    
+    cardLayout->addWidget(viewButton);
+    
+    return card;
 }
 

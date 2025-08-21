@@ -247,11 +247,12 @@ Destination_Model::Destination Destination_Model::destination_from_json(const QJ
 {
     Destination dest;
     
-    dest.id = jsonObj["Destination_ID"].toString().toInt();
+    // Map JSON fields from server response to destination structure
+    dest.id = jsonObj["Destination_ID"].toInt(); // Server sends as number, not string
     dest.name = jsonObj["Name"].toString();
     dest.country = jsonObj["Country"].toString();
     dest.description = jsonObj["Description"].toString();
-    dest.image_path = jsonObj["Image_Path"].toString();
+    dest.image_path = jsonObj["Image_Path"].toString(); // May be empty from server
     dest.created_at = jsonObj["Date_Created"].toString();
     dest.modified_at = jsonObj["Date_Modified"].toString();
     
